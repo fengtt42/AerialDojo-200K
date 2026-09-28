@@ -2,6 +2,8 @@
 
 [中文](README.md) | English
 
+[![AerialDojo-200K dataset overview](AerialDojo/assets/figures/fig1.png)](AerialDojo/assets/figures/fig1.png)
+
 This README describes the complete local dataset layout: environments, navigation tasks,
 planned trajectories, and recorded observations. See
 [AerialDojo/README.en.md](AerialDojo/README.en.md) for code usage.

@@ -2,6 +2,9 @@
 
 中文 | [English](README.en.md)
 
+[![AerialDojo-200K 数据集概览](AerialDojo/assets/figures/fig1.png)](AerialDojo/assets/figures/fig1.png)
+
+
 本文说明完整数据集在本地的目录结构，包括地图、导航任务、规划轨迹和录制数据。
 代码使用方法见 [AerialDojo/README.md](AerialDojo/README.md)。
 
