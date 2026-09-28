@@ -1,0 +1,34 @@
+{
+  // 录制/A* 回放专用：非物理无人机不会受重力和飞控 PID 影响。
+  "id": "AerialDojoSceneNonphysics",
+  "actors": [
+    {
+      "type": "robot",
+      "name": "Drone1",
+      "origin": {
+        "xyz": "0.0 0.0 -4.0",
+        "rpy-deg": "0 0 0"
+      },
+      "robot-config": "robot_aerialdojo_quadrotor_nonphysics.jsonc"
+    }
+  ],
+  "clock": {
+    // 配合 pause/continue_for_n_steps，可以按离散位姿稳定采图。
+    "type": "steppable",
+    "step-ns": 3000000,
+    "real-time-update-rate": 3000000,
+    "pause-on-start": false
+  },
+  "home-geo-point": {
+    "latitude": 47.641468,
+    "longitude": -122.140165,
+    "altitude": 122.0
+  },
+  "segmentation": {
+    "initialize-ids": true,
+    "ignore-existing": false,
+    "use-owner-name": true
+  },
+  // UnrealNative 表示继续使用当前 .sh 中已经打开的 UE 地图。
+  "scene-type": "UnrealNative"
+}

@@ -1,0 +1,16 @@
+# CLIP-H online navigation, using the same example tasks and server as replay.
+task_file: example/TASKS/SemanticOGS/Seen/BaseTasks/Testset/N_Island_0.json
+gpu_id: 0
+policy: cliph
+policy_module: ""
+policy_config: {}
+episodes: 10
+max_actions: 300
+output: outputs/policy_eval_cliph.jsonl
+cameras: ["0", "1", "2", "3"]
+rgb_mode: png
+depth_mode: float32_m
+success_distance: 1.0
+motion_mode: teleport
+scene_config: scene_collision.jsonc
+teleport_settle_seconds: 0.15

@@ -1,0 +1,10 @@
+numpy>=1.24,<2
+opencv-python>=4.8
+msgpack-rpc-python==0.4.1
+msgpack>=1.0
+tornado==4.5.3
+PyYAML>=6.0
+commentjson>=0.9
+Pillow>=10
+torch>=2.1
+transformers>=4.32,<5

@@ -1,0 +1,13 @@
+# ProjectAirSim scene-manager configuration.
+server:
+  host: 127.0.0.1
+  port: 36000
+  endpoint_base_port: 36100
+  root_path: ~/maps        # 下载了的地图的位置
+  launch_wait: 10
+  scene_launch_interval: 5
+  show_game: false        # 服务器无显示器，使用 offscreen 渲染
+  fullscreen: false
+
+# One simulator process is started per GPU id when a batch requests scenes.
+gpus: [0]

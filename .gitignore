@@ -1,0 +1,75 @@
+# GitHub contains code, the two README languages, and dataset directory markers.
+# Data files stay on local storage until the Hugging Face release is published.
+# Allow only the intended top-level entries; explicitly add new entries here.
+/*
+!/.gitignore
+!/README.md
+!/README.en.md
+!/AerialDojo/
+!/AerialENVS/
+!/SemanticOGS/
+!/ImageOGS/
+!/TrajectoryDATA/
+!/VideoRECORD/
+!/BENCHMARK/
+
+# Keep each dataset directory without traversing or adding its data.
+# HF_DATA.url may be added once the actual Hugging Face URL is available.
+/AerialENVS/*
+!/AerialENVS/.gitkeep
+!/AerialENVS/HF_DATA.url
+/SemanticOGS/*
+!/SemanticOGS/.gitkeep
+!/SemanticOGS/HF_DATA.url
+/ImageOGS/*
+!/ImageOGS/.gitkeep
+!/ImageOGS/HF_DATA.url
+/TrajectoryDATA/*
+!/TrajectoryDATA/.gitkeep
+!/TrajectoryDATA/HF_DATA.url
+/VideoRECORD/*
+!/VideoRECORD/.gitkeep
+!/VideoRECORD/HF_DATA.url
+/BENCHMARK/*
+!/BENCHMARK/.gitkeep
+!/BENCHMARK/HF_DATA.url
+
+# Local release bookkeeping, not part of the source distribution.
+/AerialDojo/COPY_MANIFEST.json
+
+# Python environments, caches, and build artifacts.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Runtime output and local model weights.
+logs/
+outputs/
+runs/
+checkpoints/
+*.log
+*.pt
+*.pth
+*.safetensors
+
+# Local environment settings and editor/OS files.
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

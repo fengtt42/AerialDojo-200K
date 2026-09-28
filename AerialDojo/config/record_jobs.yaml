@@ -1,0 +1,25 @@
+# Paths are relative to the code project, not the current shell directory.
+dataset_root: ..
+server:
+  host: 127.0.0.1
+  port: 38000
+  endpoint_base_port: 38100
+  root_path: "{dataset_root}/AerialENVS"
+  launch_wait: 10
+  scene_launch_interval: 5
+  show_game: false
+  fullscreen: false
+recording:
+  output_root: "{dataset_root}/VideoRECORD"
+task_source:
+  layout: published
+  map_name: N_Island_0
+  splits: [IID_TRAINS, OOD_TRAINS]
+  tasks: [base, standard, long]
+  start_step: 0
+  max_steps: 0
+gpus:
+  0:
+    scenes:
+      - scene: "{map_name}"
+        scene_index: 0

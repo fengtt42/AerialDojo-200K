@@ -1,0 +1,29 @@
+# Online policy evaluation configuration. The default is a runnable
+# N_Island_0 A* trajectory replay.
+task_file: example/TASKS/SemanticOGS/Seen/BaseTasks/Testset/N_Island_0.json
+gpu_id: 0
+
+# cliph 策略
+# policy: cliph
+
+
+##################### 切换策略把这个配置全都注释掉 ############################
+# A* 算法追踪路径点的策略
+policy: trajectory
+policy_module: ""
+policy_config:
+  trajectory_file: example/traj/N_Island_0/trajectories/trajectories.jsonl
+##########################################################################
+
+
+episodes: 10         # 0：执行json中全部的tasks
+max_actions: 300
+output: outputs/policy_eval_trajectory.jsonl
+
+cameras: ["0", "1", "2", "3"]
+rgb_mode: png
+depth_mode: float32_m
+success_distance: 1.0
+motion_mode: teleport
+scene_config: scene_collision.jsonc
+teleport_settle_seconds: 0.15       # 运行一帧等待时间（秒）
