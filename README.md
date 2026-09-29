@@ -1,236 +1,247 @@
-# AerialDojo 数据集结构
+# AerialDojo-200K
 
-中文 | [English](README.en.md)
+English | [简体中文](README.zh-CN.md)
 
-[![AerialDojo-200K 数据集概览](AerialDojo/assets/figures/fig1.png)](AerialDojo/assets/figures/fig1.png)
+[![AerialDojo-200K dataset overview](AerialDojo/assets/figures/fig1.png)](AerialDojo/assets/figures/fig1.png)
 
+AerialDojo-200K provides environments, navigation tasks, trajectories, and tools for
+aerial object-goal search. 
 
-本文说明完整数据集在本地的目录结构，包括地图、导航任务、规划轨迹和录制数据。
-代码使用方法见 [AerialDojo/README.md](AerialDojo/README.md)。
+This GitHub repository contains the code, documentation, and dataset directory markers.
+Data will be released separately on Hugging Face, with download links added here.
 
-**当前 GitHub 发布包含代码、中英文 README 和数据目录占位文件。** 地图、任务、
-轨迹及图像数据将另行发布到 Hugging Face，下载链接会补充在本页。克隆 GitHub
-仓库不会下载这些数据；获得数据后，将各数据目录放到仓库根目录，保持下面的
-相对路径即可。录制和在线评测需要先准备对应地图与任务数据。
-
-## 1. 总体目录
+## 1. Directory layout
 
 ```text
 AerialDojo/
-├── README.md / README.en.md     # 中英文数据集结构说明
-├── AerialENVS/                  # UE / ProjectAirSim 打包地图
+├── README.md
+├── AerialENVS/                  # Packaged UE / ProjectAirSim environments
 │   ├── IID_ENVS/
 │   └── OOD_ENVS/
-├── SemanticOGS/                 # 文本目标导航任务
-├── ImageOGS/                    # 图片目标导航任务及目标参考图片
-├── TrajectoryDATA/              # 与任务一一对应的预计算轨迹
-├── VideoRECORD/                 # 沿轨迹录制的 RGB、深度、位姿和动作
-├── BENCHMARK/                   # 当前预留目录
-└── AerialDojo/                  # 代码项目，内部 README 说明使用方法
+├── SemanticOGS/                 # Text-goal navigation tasks
+├── ImageOGS/                    # Image-goal tasks and reference images
+├── TrajectoryDATA/              # One planned trajectory per task
+├── VideoRECORD/                 # Recorded RGB, depth, poses, and actions
+├── BENCHMARK/                   # Benchmark directory
+└── AerialDojo/                  # Code, configurations, and launch scripts
 ```
 
-| 目录 | 内容 | 使用方式 |
+Place the environment, task, and trajectory data in the corresponding directories above.
+SemanticOGS and ImageOGS are two goal representations of the same navigation tasks.
+
+## 2. Using AerialDojo
+
+Code is in `AerialDojo/`: `config/` holds configurations, `scripts/` holds launch scripts,
+and the inner `AerialDojo/` Python package contains the environment, policy factory,
+scene service, and recorder.
+
+### 2.1 Installation
+
+Run on a Linux GPU server. From the repository root:
+
+```bash
+cd AerialDojo
+conda create -n aerialdojo python=3.10
+conda activate aerialdojo
+python -m pip install -r requirements.txt
+
+python -m pip install -e /path/to/ProjectAirSim/client/python/projectairsim
+```
+
+Replace the ProjectAirSim source path with the client matching your environment plugin.
+Run subsequent commands from this code directory, using the same Python environment
+in each terminal.
+
+
+### 2.2 Trajectory recording
+
+Set `dataset_root` and `gpus` in
+[config/record_jobs.yaml](AerialDojo/config/record_jobs.yaml). The default dataset root
+is the parent directory, `..`, with environments under `AerialENVS/` and output under
+`VideoRECORD/`. The recording service uses RPC port 36000 and scene ports starting at 36100.
+
+Start the recording server in terminal 1:
+
+```bash
+bash scripts/record_server.sh
+```
+
+Inspect task assignments, then record one complete trajectory in terminal 2:
+
+```bash
+bash scripts/record.sh --map_name N_Island_0 --tasks base --limit 1 --dry_run
+bash scripts/record.sh --map_name N_Island_0 --tasks base --limit 1
+```
+
+By default, the recorder selects base, standard, and long tasks from the training splits.
+Use `bash scripts/record.sh --map_name N_Island_0` to record all selected tasks for a map.
+
+| Argument | Purpose |
+| --- | --- |
+| `--map_name` | Select a map |
+| `--splits` | IID_TRAINS, IID_TESTS, OOD_TRAINS, or OOD_TESTS |
+| `--tasks` | base, standard, or long |
+| `--episode_ids 0 5 12` | Select partition-local IDs together with a split and task category |
+| `--limit` | Maximum selected tasks; 0 means unlimited, applied before resume scanning |
+| `--max_steps` | Maximum captured frames per trajectory; 0 records the full route |
+| `--gpus` | GPU list, with one scene per GPU |
+| `--dataset_root` / `--output_root` | Override the dataset root / output directory |
+| `--dry_run` | Show task assignments without launching UE |
+| `--overwrite` | Rerecord selected tasks; resume is the default |
+
+Use the same GPU pool for the service and recorder:
+
+```bash
+# Terminal 1
+bash scripts/record_server.sh --gpus 2,4
+# Terminal 2
+bash scripts/record.sh --map_name N_Island_0 --gpus 2 4
+```
+
+**Output and resume.** The default output is
+`../VideoRECORD/<split>/<task>/<map>_<B|S|L>/<episode_id>/`, containing front, left, right,
+and down 640×640 RGB PNGs, float32 depth NPYs in meters, and per-frame poses, actions,
+and task metadata. Recording uses non-physics pose playback with collisions disabled.
+Change camera resolution in the capture-settings of the
+[robot configuration](AerialDojo/config/sim_config/robot_aerialdojo_quadrotor_nonphysics.jsonc).
+
+Rerun the same command to resume; completed tasks are skipped. Frames are staged in
+`/tmp/aerialdojo_record_stage` before being copied to the output directory. Use
+`--local_stage_root ''` to write directly to the destination. After recording processes
+have stopped, rebuild the global index if needed:
+
+```bash
+python -m AerialDojo.trajectory_recording.rebuild_collected_index \
+  --record-root ../VideoRECORD
+```
+
+### 2.3 Online policy evaluation
+
+Set `server.root_path` to your local AerialENVS directory and select `gpus` in
+[config/server_config.yaml](AerialDojo/config/server_config.yaml). The default RPC port
+is 36000, with scene ports starting at 36100. `show_game: false` enables offscreen rendering.
+
+Configure [config/policy_config.yaml](AerialDojo/config/policy_config.yaml):
+
+| Setting | Purpose |
+| --- | --- |
+| `task_file` | Local task JSON path |
+| `policy` | trajectory, cliph, or a custom policy |
+| `policy_config` | Policy constructor arguments; trajectory uses trajectory_file |
+| `gpu_id` | GPU used by the UE scene |
+| `episodes` | Number of tasks; 0 runs all tasks in the file |
+| `max_actions` | Per-task action limit, 300 by default |
+| `output` | Evaluation JSONL path |
+
+**Input format.** Online tasks are a JSON array, with `start_pose.start_position` and
+`start_pose.start_quaternionr` for the start and `goal_pose.goal_position` for the goal.
+Published tasks use `start_quaternion_xyzw`; provide the same values as
+`start_quaternionr` when loading, keeping xyzw order. Set task_file and trajectory_file
+to your actual local files.
+
+The trajectory policy reads JSONL, with `trajectory_id` and `actions` in each row.
+Set the same `trajectory_id` in the task. To convert a published trajectory, locate its
+JSON by partition and episode_id, remove the initial start, keep subsequent actions,
+and append stop. Optional internal steps use `position_m` and `quaternion_wxyz`.
+
+Start the online server in terminal 1:
+
+```bash
+bash scripts/server.sh
+```
+
+Run one episode in terminal 2:
+
+```bash
+bash scripts/run_policy.sh --config config/policy_config.yaml --episodes 1
+```
+
+CLIP-H uses description, four current camera images, and depth. Set task_file, gpu_id,
+and model parameters in its separate configuration, then run:
+
+```bash
+bash scripts/run_policy.sh --config config/policy_config_cliph.yaml --episodes 1
+```
+
+Each evaluation row reports success, collision, oracle_success, steps, termination
+reason, distances, and reward. Reusing the output path overwrites the previous evaluation.
+
+### 2.4 Integrate your own policy
+
+Import `NavigationPolicy`, `PolicyAction`, and `PolicyFactory` from `AerialDojo.policies`.
+Subclass `NavigationPolicy`, initialize episode state in `reset(observation)`, and
+return a `PolicyAction` enum from `forward(observation)`.
+
+The factory resolves the policy class and constructs an instance in either of two ways:
+
+- **Load the class directly:** set `--policy my_package.my_policy:MyPolicy` and make the module importable.
+- **Load by registered name:** decorate the class with `@PolicyFactory.register("my_policy")`,
+  then use `--policy-module my_package.my_policy --policy my_policy` to import it before construction.
+
+Parameters from `policy_config` or `--policy-config` are passed to the constructor.
+For a no-argument policy, replace the old configuration with `--policy-config '{}'`.
+Your own program can call `PolicyFactory.create("my_policy", **config)` and inspect
+registered names with `PolicyFactory.available()`.
+
+### 2.5 Environment interface, observations, and actions
+
+For an existing control or training loop, construct `SimpleUAVEnv` with task_file or
+tasks, then call reset, step, and close. Reset starts or reuses a UE scene.
+
+| Method | Return values or purpose |
+| --- | --- |
+| `reset(indices=...)` | Initial observation list |
+| `step(actions)` | observations, rewards, dones, infos |
+| `step_gymnasium(actions)` | observations, rewards, terminated, truncated, infos |
+| `observe(include_images=False)` | Read state without capturing images |
+| `close()` | Clean up connections and scenes managed by the environment |
+
+Return values are batch lists, including when batch_size=1; the action-list length must
+match the current batch. To use the online evaluator's stopping rule, set
+`UAVEnvConfig.terminate_on_success=False` and let the policy issue Stop.
+
+| Observation field | Contents |
+| --- | --- |
+| `rgb` / `depth` | Front, left, right, down PNG bytes / float32 depth arrays in meters |
+| `pose` | NED position and xyzw quaternion, seven values |
+| `task` | Current task and normalized fields |
+| `state` / `imu` | State and IMU information |
+| `trajectory` | Pose, action, and distance history |
+| `step` / `move_distance` / `distance_to_goal` | Steps, traveled distance, and goal distance |
+| `done` / `success` / `collision` / `oracle_success` | Episode state |
+| `terminated` / `truncated` / `termination_reason` | Termination, truncation, and reason |
+
+| PolicyAction | Environment action | Default behavior |
 | --- | --- | --- |
-| `AerialENVS` | 可执行的 UE 地图及 ProjectAirSim 插件 | 在 Linux GPU 服务器上运行场景 |
-| `SemanticOGS` | 起点、目标、文本描述、地标和任务属性 | 文本目标导航、任务分析 |
-| `ImageOGS` | 与语义任务对应的图片目标任务和参考图片 | 图片目标导航 |
-| `TrajectoryDATA` | 规划位姿与动作序列 | 路线分析、回放、录制 |
-| `VideoRECORD` | 执行录制后生成的逐帧观测与元数据 | 训练、可视化和后处理 |
+| MoveForward / MoveLeft / MoveRight | forward / left / right | Move 1 meter relative to heading |
+| MoveUp / MoveDown | ascend / descend | Move up / down 1 meter |
+| TurnLeft / TurnRight | rotl / rotr | Turn left / right 15 degrees |
+| Stop | stop | Stop explicitly |
 
-SemanticOGS 与 ImageOGS 是同一导航任务的两种目标表示，统计任务总量时不应
-重复相加。TrajectoryDATA 不包含沿途 RGB-D；VideoRECORD 按需生成，目录存在
-不代表已经录制完毕。离线读取数据文件不需要启动 UE。
+Policies return enums; direct env.step calls use a list of action strings. When importing
+from another project, add the code directory to PYTHONPATH and supply the actual task
+and configuration paths.
 
-## 2. 地图与数据划分
+## 3. Task–trajectory correspondence
 
-地图名称采用 `<环境类别>_<环境家族>_<场景编号>`，例如 `N_Island_0`。
-
-| 前缀 | 类别 | 地图例子 |
-| --- | --- | --- |
-| `N` | 自然环境 Natural | `N_Island_0`、`N_Coast_0` |
-| `U` | 城市环境 Urban | `U_Mall_0`、`U_Factory_0` |
-| `I` | 基础设施 Infrastructure | `I_Bridge_0`、`I_RailCorridor_0` |
-| `D` | 灾害环境 Disaster | `D_Earthquake_0`、`D_Flood_0` |
-
-当前发布规则将 `_0` 地图放入 IID 组，`_1` 地图放入 OOD 组：
-
-| 任务划分目录 | 对应地图目录 | 含义 |
-| --- | --- | --- |
-| `IID_TRAINS` | `AerialENVS/IID_ENVS` | IID 地图上的训练任务 |
-| `IID_TESTS` | `AerialENVS/IID_ENVS` | IID 地图上的测试任务 |
-| `OOD_TRAINS` | `AerialENVS/OOD_ENVS` | OOD 地图上提供的训练/适配任务 |
-| `OOD_TESTS` | `AerialENVS/OOD_ENVS` | OOD 地图上的测试任务 |
-
-同一地图的 Train/Test 使用同一个 UE 场景。划分针对有向任务点对，不保证目标
-actor、语义类别或地标完全互斥。使用 OOD_TRAINS 适配时，应与未使用适配数据的
-跨场景泛化实验区分。
-
-地图启动脚本位于 `AerialENVS/<IID_ENVS 或 OOD_ENVS>/<地图>/<地图>.sh`。
-
-## 3. 任务类型与分区命名
-
-SemanticOGS、ImageOGS、TrajectoryDATA 使用相同的三级分区：
+The three data directories share the same partition layout:
 
 ```text
-<数据划分>/<任务类型>/<地图>_<B|S|L>_<Train|Test>/
+<split>/<task category>/<map>_<B|S|L>_<Train|Test>/
 ```
 
-| 任务类型目录 | 缩写 | JSON 的 task 字段 | 当前生成器的完成长度区间 |
-| --- | --- | --- | --- |
-| `1_BaseTasks` | `B` | `base_task` | `[5, 30)` 米 |
-| `2_StandardTasks` | `S` | `standard_task` | `[30, 60)` 米 |
-| `3_LongHorizonTasks` | `L` | `long_task` | `>= 60` 米，上限可按地图配置 |
+**Within each partition, episode IDs run independently from `0` to `N-1`. A SemanticOGS
+task, its ImageOGS counterpart, and its trajectory correspond one-to-one:**
 
-完成长度为路径平移长度加终点到目标的残余距离。发布数据已经完成分类、筛选和
-划分，读取时使用现有目录与任务字段即可，无需重新分类。
-
-## 4. 任务与轨迹的 episode 一一对应关系
-
-**每个分区独立编号，从 `0` 到 `N-1`。在同一分区内，SemanticOGS 的任务、
-ImageOGS 的任务和 TrajectoryDATA 的轨迹按 `episode_id` 严格一一对应。**
-
-例如分区为 `IID_TRAINS/1_BaseTasks/N_Island_0_B_Train`：
-
-```text
-SemanticOGS/IID_TRAINS/1_BaseTasks/N_Island_0_B_Train/Task.json
-ImageOGS/IID_TRAINS/1_BaseTasks/N_Island_0_B_Train/Task.json
-TrajectoryDATA/IID_TRAINS/1_BaseTasks/N_Island_0_B_Train/
-├── 0.json
-├── 1.json
-├── 2.json
-└── ...
-```
-
-| SemanticOGS/Task.json 中的任务 | ImageOGS/Task.json 中的任务 | TrajectoryDATA 中的轨迹 |
-| --- | --- | --- |
-| `episode_id = "0"` | `episode_id = "0"` | `0.json` |
-| `episode_id = "1"` | `episode_id = "1"` | `1.json` |
-| `episode_id = "2"` | `episode_id = "2"` | `2.json` |
-| `episode_id = "n"` | `episode_id = "n"` | `n.json` |
-
-因此，一个完整分区有 N 条语义任务，就应有 N 条图片任务和 N 个对应轨迹文件。
-两个 Task.json 都是任务数组；读取时按 `episode_id` 找到相应记录，再用该编号
-拼接轨迹文件名即可。
-
-需要区分以下几种编号：
-
-- **episode_id 是分区内编号。** 不同地图、不同任务类型、Train/Test 之间分别
-  从 0 开始；它们的 `0.json` 是不同任务。全局定位需要完整分区路径加 episode_id。
-- **轨迹内部 task_id 是规划阶段编号。** 它可以与 episode_id 不同，不能用它
-  替代公开目录中的 `n.json` 文件名。
-- **目标图片名称不是 episode 编号。** 图片位置以 ImageOGS 任务的 `image`
-  字段为准；多个任务可以引用同一张目标图片。
-- **actor 名称不是任务编号。** 同一 actor 可能参与多个任务或锚点，不能只根据
-  起终点 actor 名称推断某个 episode。
-
-例如 `N_Island_0_B_Train` 中的 episode 7，仅对应三个数据目录下**这个分区**
-中的 episode 7；与 `N_Island_0_B_Test` 或 `N_Island_0_S_Train` 中的 episode 7
-没有编号上的关联。
-
-## 5. SemanticOGS 任务字段
-
-每个分区的 `Task.json` 为 JSON 数组，每个元素描述一条导航任务。
-
-| 字段 | 含义 |
+| Data | Record or file for episode `n` |
 | --- | --- |
-| `episode_id` | 分区内任务编号，字符串 |
-| `map_name` | 地图名称 |
-| `coordinate_system` | 坐标系统，公开数据为 ProjectAirSim NED |
-| `start_true_name` / `goal_true_name` | 起点、目标的可读对象名称 |
-| `start_object_name` / `goal_object_name` | UE actor 名称 |
-| `start_pose.start_position` | 起点 xyz，单位米 |
-| `start_pose.start_quaternion_xyzw` | 起点四元数，顺序为 xyzw |
-| `goal_pose.goal_position` | 目标锚点 xyz，单位米 |
-| `category` | 目标语义类别 |
-| `Landmark` | 目标关联地标的文字描述 |
-| `Direction` | 方向描述 |
-| `description` | 目标对象的文本描述 |
-| `task` | base_task、standard_task 或 long_task |
-| `used-in-train` | 1 为训练任务，0 为测试任务 |
-| `info.geodesic_distance` | 规划路径平移长度，米 |
-| `info.euclidean_distance` | 起点到目标锚点的直线距离，米 |
-| `info.complexity` | 完成长度除以直线距离得到的复杂度 |
+| SemanticOGS | Record with `episode_id = "n"` in that partition's `Task.json` |
+| ImageOGS | Record with `episode_id = "n"` in the same partition's `Task.json` |
+| TrajectoryDATA | `<same partition>/n.json` |
 
-复杂度计算包含终点残余距离，可能与 geodesic_distance / euclidean_distance
-略有区别。地图之间的筛选阈值可以不同，不应使用一个固定阈值重新解释全部任务。
+Use the full partition path plus `episode_id` to identify a task globally. The
+trajectory's internal `task_id` is its planning identifier; published trajectory
+filenames follow `episode_id`. Resolve an ImageOGS task's `image` path relative to the
+directory containing its `Task.json`.
 
-## 6. ImageOGS 图片目标
-
-ImageOGS 与 SemanticOGS 保持相同的任务划分、episode_id、起点和目标。图片任务
-以 `image` 字段提供目标参考图片，不包含语义任务中的 `description` 和 `Direction`。
-
-`image` 相对于**当前 Task.json 所在目录**解析，通常为 `Images/<文件名>.png`。
-复制图片目标数据时需要一起复制被引用的 Images 文件。参考图片用于描述目标，
-不表示无人机沿轨迹采集的实时画面。
-
-## 7. TrajectoryDATA 轨迹字段
-
-每个 `<episode_id>.json` 为一个 JSON 对象。
-
-| 字段 | 含义 |
-| --- | --- |
-| `schema_version` | 轨迹格式版本，如 hybrid_astar_trajectory_v6 |
-| `map_name` | 所属地图 |
-| `task_id` | 原始规划任务编号 |
-| `status` | 规划状态 |
-| `start` | 起点 actor、位置和姿态 |
-| `goal` | 目标 actor、目标位置、目标半径与边界定义 |
-| `trajectory` | 按顺序排列的位姿和动作列表 |
-| `trajectory[].position_ned_m` | 当前位姿的位置，NED 米 |
-| `trajectory[].quaternion_xyzw` | 当前姿态，xyzw |
-| `trajectory[].action` | 到达当前位姿使用的动作 |
-
-第一项动作为 `start`。后续动作描述从前一位姿到当前位姿的变化，末项不一定有
-`stop`。目标通常是一个半径范围，所以末点不一定精确等于目标锚点。
-
-公开任务和轨迹都使用 **NED 米制位置、[x, y, z, w] 四元数**。NED 的 z 正方向
-向下，z 不能直接当作离地高度；回放已有数据不需要再次进行 UE→NED 变换。
-
-## 8. VideoRECORD 录制数据
-
-录制保留 split 和 task 目录，分区文件夹省去末尾的 `_Train` / `_Test`：
-
-```text
-VideoRECORD/IID_TRAINS/1_BaseTasks/N_Island_0_B/
-├── 0/                           # 对应原分区 episode_id="0"
-│   ├── step_*_camera_*.png       # 前、左、右、下四路 RGB
-│   ├── depth/*.npy              # 同帧对应的深度
-│   ├── trajectory_*_collected.jsonl
-│   └── .recording_complete.json
-└── collected_episodes.json      # 分区录制索引
-```
-
-默认 RGB 和深度为 640×640；RGB 保存为 PNG，DepthPerspective 深度保存为米制
-float32 NPY。元数据包含原始 episode_id、规划 task_id、任务来源、每帧位姿和动作。
-
-全局 `VideoRECORD/collected_episodes.jsonl` 汇总录制信息；跨分区使用唯一的
-`recording_id` 区分任务，不能只使用 episode_id。录制帧动作表示“看到当前观测后
-要执行的下一动作”，最后一帧为 stop，与原始轨迹项的动作排列方式有一位偏移。
-
-录制输出为逐帧数据，不自动合成 MP4。图像引用可能包含原机器的绝对路径，移动
-录制目录后需相应更新元数据路径。
-
-## 9. 当前数据检查与已知限制
-
-2026-09-28 对发布前的本地完整数据目录进行了只读检查：42 张地图的 252 个分区，共 102,866 条
-导航任务及对应轨迹。语义任务、图片任务和轨迹文件的 episode 对应关系、共享
-字段与轨迹起点/目标绑定均通过检查；9,504 个被引用的目标图片文件均可读，
-尺寸均为 640×640。本次未重新验证规划结果、碰撞或实际启动 UE。
-
-- **缺少一张地图包**：`AerialENVS/OOD_ENVS/U_Community_1` 不存在。该地图
-  的 394 条任务与轨迹已提供，但在线运行或录制前需要补齐地图包。其余 41 张
-  地图的启动脚本、脚本引用的主程序及 pak 文件存在。
-- **12 个长程分区为空**：下表所列分区的 Task.json 是空数组，对应轨迹目录
-  也为空；不属于任务与轨迹错配。批量读取与统计时应跳过空分区，并避免除零。
-- **VideoRECORD 尚无录制结果**：当前只有预建目录，没有 episode 录制数据。
-  如需沿途 RGB-D，请按照代码 README 执行录制。
-- **在线评测需要准备输入**：在线 YAML 仍引用未提供的 `example/...` 文件，
-  在线入口的起点四元数字段和轨迹格式也与发布格式不同。转换说明见
-  [代码 README 第 4 节](AerialDojo/README.md#4-在线策略评测)。录制入口直接支持
-  当前发布格式。
-
-| 空的长程分区 | 地图 |
-| --- | --- |
-| Train 和 Test 均为空 | D_Earthquake_0、D_Explosion_0、D_Flood_0、N_Forest_0、U_ParkingLot_1 |
-| 仅 Train 为空 | N_Mountain_1 |
-| 仅 Test 为空 | N_Snowfield_0 |
+Task and trajectory positions use NED meters; quaternions use `[x, y, z, w]` order.
