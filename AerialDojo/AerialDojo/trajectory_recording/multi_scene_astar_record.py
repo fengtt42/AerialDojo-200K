@@ -306,7 +306,7 @@ def parse_args(argv=None):
         default=DEFAULT_SCENE_CONFIG,
     )
     parser.add_argument("--dataset_root", default=None, help="Published dataset root; defaults to the project parent.")
-    parser.add_argument("--splits", nargs="+", choices=("IID_TRAINS", "IID_TESTS", "OOD_TRAINS", "OOD_TESTS"))
+    parser.add_argument("--splits", nargs="+", choices=("ID_TRAINS", "ID_TESTS", "OOD_TRAINS", "OOD_TESTS"))
     parser.add_argument("--tasks", nargs="+", choices=("base", "standard", "long"))
     parser.add_argument("--episode_ids", nargs="+", help="Episode ids within the selected partitions.")
     parser.add_argument("--limit", type=int, default=None, help="Maximum episodes across selected partitions; 0 selects all.")

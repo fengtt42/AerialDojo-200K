@@ -36,7 +36,7 @@ class PublishedRecordingTests(unittest.TestCase):
             "gpus": {0: {"scenes": [{"scene": "{map_name}", "scene_index": 0}]}},
         }))
 
-    def write_partition(self, split="IID_TRAINS", category="1_BaseTasks", suffix="B", task_type="base_task"):
+    def write_partition(self, split="ID_TRAINS", category="1_BaseTasks", suffix="B", task_type="base_task"):
         is_train = split.endswith("TRAINS")
         folder = "Map_0_{}_{}".format(suffix, "Train" if is_train else "Test")
         relative = Path(split) / category / folder
@@ -87,7 +87,7 @@ class PublishedRecordingTests(unittest.TestCase):
         recording = jobs[0]["recordings"][0]
         self.assertEqual(Path(recording["trajectory_file"]).name, "7.json")
         self.assertEqual(recording["trajectory_lookup_id"], "planner_7")
-        self.assertEqual(recording["output_dir"], self.root / "VideoRECORD/IID_TRAINS/1_BaseTasks/Map_0_B/7")
+        self.assertEqual(recording["output_dir"], self.root / "VideoRECORD/ID_TRAINS/1_BaseTasks/Map_0_B/7")
         self.assertEqual([s["action"] for s in recording["steps"]], ["forward", "rotr", "stop"])
         self.assertEqual(recording["steps"][0]["position_m"], [0, 0, -3])
         for actual, expected in zip(recording["steps"][-1]["quaternion_wxyz"], [0.8660254037844386, 0, 0, 0.5]):
@@ -96,7 +96,7 @@ class PublishedRecordingTests(unittest.TestCase):
         self.assertIn("start_pose", recording["source_task"]["task_payload"])
 
     def test_all_partition_names_and_no_episode_collisions(self):
-        for split in ("IID_TRAINS", "IID_TESTS", "OOD_TRAINS", "OOD_TESTS"):
+        for split in ("ID_TRAINS", "ID_TESTS", "OOD_TRAINS", "OOD_TESTS"):
             for category, suffix, task_type in (
                 ("1_BaseTasks", "B", "base_task"), ("2_StandardTasks", "S", "standard_task"),
                 ("3_LongHorizonTasks", "L", "long_task"),
@@ -111,8 +111,8 @@ class PublishedRecordingTests(unittest.TestCase):
 
     def test_filters_limit_and_cli_frame_override(self):
         self.write_partition()
-        self.write_partition("IID_TESTS")
-        jobs = recorder.load_recording_jobs(self.args("--splits", "IID_TESTS", "--tasks", "base", "--limit", "1", "--max_steps", "2"))
+        self.write_partition("ID_TESTS")
+        jobs = recorder.load_recording_jobs(self.args("--splits", "ID_TESTS", "--tasks", "base", "--limit", "1", "--max_steps", "2"))
         recording = jobs[0]["recordings"][0]
         self.assertEqual(len(jobs[0]["recordings"]), 1)
         self.assertEqual(recording["source_task"]["split"], "test")
@@ -126,7 +126,7 @@ class PublishedRecordingTests(unittest.TestCase):
 
     def test_missing_trajectory_is_reported_before_any_output(self):
         self.write_partition()
-        path = self.root / "TrajectoryDATA/IID_TRAINS/1_BaseTasks/Map_0_B_Train/7.json"
+        path = self.root / "TrajectoryDATA/ID_TRAINS/1_BaseTasks/Map_0_B_Train/7.json"
         path.unlink()
         with self.assertRaisesRegex(FileNotFoundError, "7.json"):
             recorder.load_recording_jobs(self.args())
@@ -134,8 +134,8 @@ class PublishedRecordingTests(unittest.TestCase):
 
     def test_incremental_indexes_preserve_previous_batches_and_source_ids(self):
         self.write_partition()
-        self.write_partition("IID_TESTS")
-        for split in ("IID_TRAINS", "IID_TESTS"):
+        self.write_partition("ID_TESTS")
+        for split in ("ID_TRAINS", "ID_TESTS"):
             for episode_id in ("7", "42"):
                 args = self.args("--splits", split, "--episode_ids", episode_id)
                 jobs = self.completed_jobs(args)
@@ -144,7 +144,7 @@ class PublishedRecordingTests(unittest.TestCase):
         root = self.root / "VideoRECORD"
         root_items = [json.loads(line) for line in (root / "collected_episodes.jsonl").read_text().splitlines()]
         self.assertEqual(len(root_items), 4)
-        partition = json.loads((root / "IID_TRAINS/1_BaseTasks/Map_0_B/collected_episodes.json").read_text())
+        partition = json.loads((root / "ID_TRAINS/1_BaseTasks/Map_0_B/collected_episodes.json").read_text())
         self.assertEqual({item["episode_id"] for item in partition}, {"7", "42"})
         episodes, summary = rebuild.rebuild_episodes(root, rebuild.DEFAULT_TASK_DIRECTORIES)
         self.assertEqual(summary["split_counts"], {"train": 2, "test": 2})
@@ -206,7 +206,7 @@ class PublishedRecordingTests(unittest.TestCase):
 
     def test_map_discovery_and_legacy_alias(self):
         envs = self.root / "AerialENVS"
-        for name, group in (("N_Island_0", "IID_ENVS"), ("U_Factory_1", "OOD_ENVS")):
+        for name, group in (("N_Island_0", "ID_ENVS"), ("U_Factory_1", "OOD_ENVS")):
             script = envs / group / name / (name + ".sh")
             script.parent.mkdir(parents=True)
             script.write_text("#!/bin/sh\n")

@@ -15,7 +15,7 @@ Hugging Face，下载链接会补充在本页。
 AerialDojo/
 ├── README.md
 ├── AerialENVS/                  # UE / ProjectAirSim 打包地图
-│   ├── IID_ENVS/
+│   ├── ID_ENVS/
 │   └── OOD_ENVS/
 ├── SemanticOGS/                 # 文本目标导航任务
 ├── ImageOGS/                    # 图片目标任务及参考图片
@@ -76,7 +76,7 @@ bash scripts/record.sh --map_name N_Island_0 --tasks base --limit 1
 | 参数 | 用途 |
 | --- | --- |
 | `--map_name` | 选择地图 |
-| `--splits` | IID_TRAINS、IID_TESTS、OOD_TRAINS 或 OOD_TESTS |
+| `--splits` | ID_TRAINS、ID_TESTS、OOD_TRAINS 或 OOD_TESTS |
 | `--tasks` | base、standard 或 long |
 | `--episode_ids 0 5 12` | 选择分区内编号，配合 split 和 task 使用 |
 | `--limit` | 最多选择的任务数；0 为不限，在续录扫描前应用 |

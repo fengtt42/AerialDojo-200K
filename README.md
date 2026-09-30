@@ -16,7 +16,7 @@ Data will be released separately on Hugging Face, with download links added here
 AerialDojo/
 ├── README.md
 ├── AerialENVS/                  # Packaged UE / ProjectAirSim environments
-│   ├── IID_ENVS/
+│   ├── ID_ENVS/
 │   └── OOD_ENVS/
 ├── SemanticOGS/                 # Text-goal navigation tasks
 ├── ImageOGS/                    # Image-goal tasks and reference images
@@ -79,7 +79,7 @@ Use `bash scripts/record.sh --map_name N_Island_0` to record all selected tasks 
 | Argument | Purpose |
 | --- | --- |
 | `--map_name` | Select a map |
-| `--splits` | IID_TRAINS, IID_TESTS, OOD_TRAINS, or OOD_TESTS |
+| `--splits` | ID_TRAINS, ID_TESTS, OOD_TRAINS, or OOD_TESTS |
 | `--tasks` | base, standard, or long |
 | `--episode_ids 0 5 12` | Select partition-local IDs together with a split and task category |
 | `--limit` | Maximum selected tasks; 0 means unlimited, applied before resume scanning |

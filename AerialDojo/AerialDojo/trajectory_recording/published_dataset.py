@@ -8,7 +8,7 @@ import re
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SPLITS = ("IID_TRAINS", "IID_TESTS", "OOD_TRAINS", "OOD_TESTS")
+SPLITS = ("ID_TRAINS", "ID_TESTS", "OOD_TRAINS", "OOD_TESTS")
 TASKS = {
     "base": ("1_BaseTasks", "B", "base_task"),
     "standard": ("2_StandardTasks", "S", "standard_task"),
@@ -74,7 +74,7 @@ def records_from_published_dataset(payload, args, catalogs):
             relative = Path(split) / category / task_folder
             task_path = root / "SemanticOGS" / relative / "Task.json"
             if not task_path.is_file():
-                continue  # A map normally belongs to only IID or OOD.
+                continue  # A map normally belongs to only ID or OOD.
             document = json.loads(task_path.read_text(encoding="utf-8"))
             if not isinstance(document, list):
                 raise ValueError("Task.json must contain a list: {}".format(task_path))

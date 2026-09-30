@@ -232,7 +232,7 @@ def _scene_candidates(root_path, scene_name):
     if Path(scene_name).name != scene_name or scene_name in (".", ".."):
         raise ValueError("invalid scene name: {}".format(scene_name))
     candidates = []
-    for parent in (root, root / "IID_ENVS", root / "OOD_ENVS"):
+    for parent in (root, root / "ID_ENVS", root / "OOD_ENVS"):
         candidate = parent / scene_name / (scene_name + ".sh")
         if candidate.is_file():
             candidates.append(candidate.resolve())
@@ -243,10 +243,10 @@ def _scene_candidates(root_path, scene_name):
 
 
 def discover_scene_scripts(root_path: str) -> dict:
-    """Discover flat map folders and published IID_ENVS/OOD_ENVS maps."""
+    """Discover flat map folders and published ID_ENVS/OOD_ENVS maps."""
     root = Path(root_path).expanduser()
     names = set(env_exec_path_dict)
-    for parent in (root, root / "IID_ENVS", root / "OOD_ENVS"):
+    for parent in (root, root / "ID_ENVS", root / "OOD_ENVS"):
         if parent.is_dir():
             names.update(path.name for path in parent.iterdir()
                          if path.is_dir() and (path / (path.name + ".sh")).is_file())
@@ -284,7 +284,7 @@ def resolve_scene_executable(root_path: str, scene_id) -> Path:
                 break
     if env_info:
         root = Path(root_path).expanduser()
-        for parent in (root, root / "IID_ENVS", root / "OOD_ENVS"):
+        for parent in (root, root / "ID_ENVS", root / "OOD_ENVS"):
             script = parent / env_info["exec_path"] / (env_info["bash_name"] + ".sh")
             if script.is_file():
                 return script.resolve()

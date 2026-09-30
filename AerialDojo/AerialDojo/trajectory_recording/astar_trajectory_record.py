@@ -22,7 +22,7 @@ warnings.filterwarnings(
 )
 
 DEFAULT_TRAJECTORY_FILE = (
-    REPO_ROOT.parent / "TrajectoryDATA" / "IID_TRAINS"
+    REPO_ROOT.parent / "TrajectoryDATA" / "ID_TRAINS"
     / "1_BaseTasks" / "N_Island_0_B_Train" / "0.json"
 )
 DEFAULT_PLUGIN_CONFIG_DIR = (

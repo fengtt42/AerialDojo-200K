@@ -14,7 +14,7 @@ recording:
 task_source:
   layout: published
   map_name: N_Island_0
-  splits: [IID_TRAINS, OOD_TRAINS]
+  splits: [ID_TRAINS, OOD_TRAINS]
   tasks: [base, standard, long]
   start_step: 0
   max_steps: 0
