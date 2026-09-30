@@ -1,16 +1,16 @@
-<p align="center">
-  <a href="https://arxiv.org/abs/2609.36066"><img src="https://img.shields.io/badge/Paper-b31b1b?style=flat-square" alt="Paper" /></a>
-  <a href="https://fengtt42.github.io/AerialDojo/"><img src="https://img.shields.io/badge/Project%20website-286fa8?style=flat-square" alt="Project website" /></a>
-  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/AerialENVS"><img src="https://img.shields.io/badge/AerialENVS-287bb5?style=flat-square" alt="AerialENVS" /></a>
-  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/SemanticOGS"><img src="https://img.shields.io/badge/SemanticOGS-8655ad?style=flat-square" alt="SemanticOGS" /></a>
-  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/ImageOGS"><img src="https://img.shields.io/badge/ImageOGS-8655ad?style=flat-square" alt="ImageOGS" /></a>
-  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/TrajectoryDATA"><img src="https://img.shields.io/badge/TrajectoryDATA-2e8b57?style=flat-square" alt="TrajectoryDATA" /></a>
-  <a href="https://github.com/fengtt42/AerialDojo-200K"><img src="https://img.shields.io/badge/Benchmark-b98920?style=flat-square" alt="Benchmark" /></a>
-  <a href="https://github.com/fengtt42/AerialDojo"><img src="https://img.shields.io/badge/Leaderboard-d47732?style=flat-square" alt="Leaderboard" /></a>
+<p align="left">
+  <a href="https://arxiv.org/abs/2609.36066"><img src="https://img.shields.io/badge/arXiv-Paper-b31b1b?style=flat-square&amp;logo=arxiv" width="116" height="24" alt="Paper" /></a>
+  <a href="https://fengtt42.github.io/AerialDojo/"><img src="https://img.shields.io/badge/Project%20website-286fa8?style=flat-square" width="114" height="24" alt="Project website" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/AerialENVS"><img src="https://img.shields.io/badge/Hugging%20Face-AerialENVS-287bb5?style=flat-square&amp;logo=huggingface" width="208" height="24" alt="AerialENVS" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/SemanticOGS"><img src="https://img.shields.io/badge/Hugging%20Face-SemanticOGS-8655ad?style=flat-square&amp;logo=huggingface" width="227" height="24" alt="SemanticOGS" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/ImageOGS"><img src="https://img.shields.io/badge/Hugging%20Face-ImageOGS-8655ad?style=flat-square&amp;logo=huggingface" width="208" height="24" alt="ImageOGS" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/TrajectoryDATA"><img src="https://img.shields.io/badge/Hugging%20Face-TrajectoryDATA-2e8b57?style=flat-square&amp;logo=huggingface" width="239" height="24" alt="TrajectoryDATA" /></a>
+  <a href="https://github.com/fengtt42/AerialDojo-200K"><img src="https://img.shields.io/badge/GitHub-Benchmark-b98920?style=flat-square&amp;logo=github" width="164" height="24" alt="Benchmark" /></a>
+  <a href="https://github.com/fengtt42/AerialDojo"><img src="https://img.shields.io/badge/GitHub-Leaderboard-d47732?style=flat-square&amp;logo=github" width="172" height="24" alt="Leaderboard" /></a>
 </p>
 
 <p align="center">
-  <img src="AerialDojo/assets/figures/aerialdojo-logo-redrawn.png" width="100%" alt="AerialDojo-200K — redrawn transparent brick-letter logo" />
+  <img src="AerialDojo/assets/figures/aerialdojo-logo-compact.svg" width="100%" alt="AerialDojo-200K — redrawn transparent brick-letter logo" />
 </p>
 
 **AerialDojo-200K** is a large-scale benchmark suite for **open-world aerial object-goal search (AerialOGS)**. This is the official repository for the [AerialDojo-200K paper](https://arxiv.org/abs/2609.36066), providing code and documentation for its simulation environments, search tasks, reference trajectories, recording tools, and evaluation framework. If you find this work useful, please give us a star ⭐. Thank you!
