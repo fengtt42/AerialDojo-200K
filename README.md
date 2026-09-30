@@ -1,49 +1,44 @@
-<div align="center">
-  <img src="AerialDojo/assets/figures/aerialdojo-logo.png" width="500" alt="AerialDojo-200K brick-letter logo from Figure 1" />
-  <h2>A Large-Scale Benchmark Suite for Open-World Aerial Object-Goal Search</h2>
-  <p>English | <a href="README.zh-CN.md">简体中文</a></p>
-</div>
+<p align="center">
+  <a href="https://arxiv.org/abs/2609.36066"><img src="https://img.shields.io/badge/Paper-b31b1b?style=flat-square" alt="Paper" /></a>
+  <a href="https://fengtt42.github.io/AerialDojo/"><img src="https://img.shields.io/badge/Project%20website-286fa8?style=flat-square" alt="Project website" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/AerialENVS"><img src="https://img.shields.io/badge/AerialENVS-287bb5?style=flat-square" alt="AerialENVS" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/SemanticOGS"><img src="https://img.shields.io/badge/SemanticOGS-8655ad?style=flat-square" alt="SemanticOGS" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/ImageOGS"><img src="https://img.shields.io/badge/ImageOGS-8655ad?style=flat-square" alt="ImageOGS" /></a>
+  <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/TrajectoryDATA"><img src="https://img.shields.io/badge/TrajectoryDATA-2e8b57?style=flat-square" alt="TrajectoryDATA" /></a>
+  <a href="https://github.com/fengtt42/AerialDojo-200K"><img src="https://img.shields.io/badge/Benchmark-b98920?style=flat-square" alt="Benchmark" /></a>
+  <a href="https://github.com/fengtt42/AerialDojo"><img src="https://img.shields.io/badge/Leaderboard-d47732?style=flat-square" alt="Leaderboard" /></a>
+</p>
 
-If you find this work useful, please give us a star ⭐. Thank you!
+<p align="center">
+  <img src="AerialDojo/assets/figures/aerialdojo-logo-redrawn.png" width="100%" alt="AerialDojo-200K — redrawn transparent brick-letter logo" />
+</p>
 
-## Resources
+**AerialDojo-200K** is a large-scale benchmark suite for **open-world aerial object-goal search (AerialOGS)**. This is the official repository for the [AerialDojo-200K paper](https://arxiv.org/abs/2609.36066), providing code and documentation for its simulation environments, search tasks, reference trajectories, recording tools, and evaluation framework. If you find this work useful, please give us a star ⭐. Thank you!
 
-[![Paper](https://img.shields.io/badge/arXiv-Paper-b31b1b)](https://arxiv.org/abs/2609.36066)
-[![AerialENVS](https://img.shields.io/badge/Hugging%20Face-AerialENVS-blue)](https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/AerialENVS)
-[![SemanticOGS](https://img.shields.io/badge/Hugging%20Face-SemanticOGS-purple)](https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/SemanticOGS)
-[![ImageOGS](https://img.shields.io/badge/Hugging%20Face-ImageOGS-purple)](https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/ImageOGS)
-[![TrajectoryDATA](https://img.shields.io/badge/Hugging%20Face-TrajectoryDATA-green)](https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/TrajectoryDATA)
-[![Benchmark](https://img.shields.io/badge/GitHub-Benchmark-yellow)](https://github.com/fengtt42/AerialDojo-200K)
-[![Leaderboard](https://img.shields.io/badge/GitHub-Leaderboard-orange)](https://github.com/fengtt42/AerialDojo)
+<p align="center">
+  <a href="https://fengtt42.github.io/AerialDojo/assets/fig1.webp"><img src="https://fengtt42.github.io/AerialDojo/assets/fig1.webp" width="100%" alt="Figure 1. Overview of AerialDojo-200K — 4096-pixel project-website figure" /></a>
+</p>
 
-[Project website](https://fengtt42.github.io/AerialDojo/) · [Interactive results](https://fengtt42.github.io/AerialDojo/#leaderboard) · [Full Hugging Face dataset](https://huggingface.co/datasets/fengtt42/AerialDojo-200K)
+<table width="100%">
+  <tr>
+    <td width="170" valign="top"><strong>01<br />Large-Scale</strong></td>
+    <td>AerialDojo-200K comprises <strong>42 scenes</strong> across four scene families and 21 scene types, and <strong>205,732 task instances</strong> spanning SemanticOGS and ImageOGS under Base, Standard, and Long-Horizon settings. AerialDojo-200K offers <strong>3× as many scenes and 18.7× as many task instances</strong> as the largest prior benchmark for aerial object-goal search.</td>
+  </tr>
+</table>
 
-## Overview
+<table width="100%">
+  <tr>
+    <td width="170" valign="top"><strong>02<br />High-Quality</strong></td>
+    <td>AerialDojo-200K provides extensive manual annotations of 109 landmarks, 2,099 objects, and 2,099 object anchors, <strong>completed by 12 annotators over two months.</strong> AerialDojo-200K includes collision-free reference trajectories totaling 4,115.313 km of unique routes and 63,177 groups of multi-view recordings, recorded exclusively for training.</td>
+  </tr>
+</table>
 
-**AerialDojo-200K** is a large-scale benchmark suite for **open-world aerial object-goal search (AerialOGS)**. This is the official repository for the [AerialDojo-200K paper](https://arxiv.org/abs/2609.36066), providing code and documentation for its simulation environments, search tasks, reference trajectories, recording tools, and evaluation framework.
-
-An aerial agent must explore an unfamiliar 3D environment, identify the specified target object from onboard visual observations, and explicitly stop near it. The goal includes the object's name, a landmark and relative direction, and either a semantic description (**SemanticOGS**) or reference image (**ImageOGS**). The agent chooses where to search and when the target has been found; it receives no step-by-step route instructions. Target coordinates and reference trajectories are withheld from the agent during benchmark evaluation.
-
-<div align="center">
-  <img src="AerialDojo/assets/figures/fig1.png" width="1000" alt="AerialDojo-200K overview: environments, object-goal search tasks, trajectory data, unified benchmark, and leaderboard" />
-  <p><em>Figure 1. Overview of AerialDojo-200K.</em></p>
-</div>
-
-- **Large-Scale.** 42 scenes across four scene families and 21 scene types, with 205,732 task instances across Base, Standard, and Long-Horizon settings. These comprise 102,866 SemanticOGS and 102,866 ImageOGS instances.
-- **High-Quality.** Manual annotations cover 109 landmarks, 2,099 objects, and 2,099 object anchors, **completed by 12 annotators over two months.** Collision-free reference trajectories total 4,115.313 km of unique routes, with 63,177 groups of multi-view recordings collected exclusively for training.
-- **Unified Evaluation.** AerialDojo-200K **unifies data formats, action spaces, and evaluation protocols**, with 21 in-distribution and 21 out-of-distribution scenes. Evaluation of **nine multimodal large language models** reveals that existing methods still have a long way to go towards general-purpose aerial agents.
-
-### Search settings and evaluation
-
-| Setting | Reference trajectory length | Action budget |
-| --- | --- | --- |
-| Base | 5 m ≤ length < 30 m | 90 |
-| Standard | 30 m ≤ length < 60 m | 180 |
-| Long-Horizon | 60 m ≤ length < 100 m | 300 |
-
-The primary success criterion is an explicit **Stop within 3 m of the target anchor**, without collision and within the action budget. Episodes end on Stop, collision, or budget exhaustion. The paper reports SR, OSR, DTS, SPL, and CR; 5 m is a supplementary success threshold. See the [paper](https://arxiv.org/abs/2609.36066) for the complete protocol and the [project website](https://fengtt42.github.io/AerialDojo/) for results.
-
-The GitHub repository contains code, documentation, and data-directory markers. Download the environments, tasks, and trajectories from the Hugging Face links above and place them in the matching directories below.
+<table width="100%">
+  <tr>
+    <td width="170" valign="top"><strong>03<br />Unified Evaluation</strong></td>
+    <td>AerialDojo-200K <strong>unifies data formats, action spaces, and evaluation protocols</strong>, with 21 in-distribution and 21 out-of-distribution scenes. AerialDojo-200K evaluates <strong>nine multimodal large language models</strong>, revealing that existing methods still have a long way to go towards general-purpose aerial agents.</td>
+  </tr>
+</table>
 
 ## 1. Directory layout
 
@@ -153,6 +148,14 @@ python -m AerialDojo.trajectory_recording.rebuild_collected_index \
 ```
 
 ### 2.3 Online policy evaluation
+
+| Setting | Reference trajectory length | Action budget |
+| --- | --- | --- |
+| Base | 5 m ≤ length < 30 m | 90 |
+| Standard | 30 m ≤ length < 60 m | 180 |
+| Long-Horizon | 60 m ≤ length < 100 m | 300 |
+
+The primary success criterion is an explicit **Stop within 3 m of the target anchor**, without collision and within the action budget. Episodes end on Stop, collision, or budget exhaustion. The paper reports SR, OSR, DTS, SPL, and CR; 5 m is a supplementary success threshold. See the [paper](https://arxiv.org/abs/2609.36066) for the complete protocol and the [project website](https://fengtt42.github.io/AerialDojo/) for results.
 
 The `trajectory` policy replays a supplied reference trajectory for testing the pipeline;
 it is not an autonomous object-goal search baseline. For benchmark results, use a search
