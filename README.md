@@ -6,7 +6,7 @@
   <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/ImageOGS"><img src="https://img.shields.io/badge/Hugging%20Face-ImageOGS-8655ad?style=flat-square&amp;logo=huggingface" width="208" height="24" alt="ImageOGS" /></a>
   <a href="https://huggingface.co/datasets/fengtt42/AerialDojo-200K/tree/main/TrajectoryDATA"><img src="https://img.shields.io/badge/Hugging%20Face-TrajectoryDATA-2e8b57?style=flat-square&amp;logo=huggingface" width="239" height="24" alt="TrajectoryDATA" /></a>
   <a href="https://github.com/fengtt42/AerialDojo-200K"><img src="https://img.shields.io/badge/GitHub-Benchmark-b98920?style=flat-square&amp;logo=github" width="164" height="24" alt="Benchmark" /></a>
-  <a href="https://github.com/fengtt42/AerialDojo"><img src="https://img.shields.io/badge/GitHub-Leaderboard-d47732?style=flat-square&amp;logo=github" width="172" height="24" alt="Leaderboard" /></a>
+  <a href="https://fengtt42.github.io/AerialDojo/#leaderboard"><img src="https://img.shields.io/badge/GitHub-Leaderboard-d47732?style=flat-square&amp;logo=github" width="172" height="24" alt="Leaderboard" /></a>
 </p>
 
 <p align="center">
