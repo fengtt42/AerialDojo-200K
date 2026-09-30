@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="AerialDojo/assets/figures/aerialdojo-logo-compact.svg" width="100%" alt="AerialDojo-200K — redrawn transparent brick-letter logo" />
+  <img src="AerialDojo/assets/figures/aerialdojo-logo-compact-v2.svg" width="100%" alt="AerialDojo-200K — redrawn transparent brick-letter logo" />
 </p>
 
 **AerialDojo-200K** is a large-scale benchmark suite for **open-world aerial object-goal search (AerialOGS)**. This is the official repository for the [AerialDojo-200K paper](https://arxiv.org/abs/2609.36066), providing code and documentation for its simulation environments, search tasks, reference trajectories, recording tools, and evaluation framework. If you find this work useful, please give us a star ⭐. Thank you!
