@@ -162,6 +162,7 @@ def _normalize_task(task: Dict[str, Any], task_dir: Path) -> Dict[str, Any]:
     start_position = start_pose.get("start_position") or item.get("start_position")
     start_quaternion = (
         start_pose.get("start_quaternionr")
+        or start_pose.get("start_quaternion_xyzw")
         or item.get("start_quaternionr")
         or item.get("start_orientation")
     )
