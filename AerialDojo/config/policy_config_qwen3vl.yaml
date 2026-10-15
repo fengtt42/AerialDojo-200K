@@ -1,0 +1,22 @@
+# U_Mall_0 base_rgbd policy example. Replace model and task paths for your host.
+task_file: ../ImageOGS/ID_TESTS/1_BaseTasks/U_Mall_0_B_Test/Task.json
+gpu_id: 0
+policy: qwen3vl
+policy_module: AerialDojo.policies.qwen3vl
+policy_config:
+  model_name_or_path: ../models/Qwen3-VL-4B-Instruct
+  device: cuda:0
+  dtype: bfloat16
+  max_new_tokens: 32
+  max_pixels_per_image: 200704
+  history_length: 10
+episodes: 199
+max_actions: 100
+output: outputs/policy_eval_qwen3vl.jsonl
+cameras: ['0']
+rgb_mode: png
+depth_mode: uint8
+success_distance: 1.0
+motion_mode: teleport
+scene_config: scene_collision.jsonc
+teleport_settle_seconds: 0.05
